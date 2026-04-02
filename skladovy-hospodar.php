@@ -245,7 +245,7 @@ add_action('wp_ajax_hospodar_get_products', function() {
                 'name' => $p->get_name(),
                 'stock' => $stock_qty,
                 'cats' => $cats
-            ];
+             ];
             $stocked_products[] = [
                 'category' => $cats[0]['name'] ?? 'Bez kategorie',
                 'name' => $p->get_name(),

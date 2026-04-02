@@ -179,17 +179,18 @@ function skladovy_hospodar_import_products() {
         if ($composition_raw !== '') {
             // Formát: "item_123 (45); item_456 (78)"
             $parts = array_filter(array_map('trim', explode(';', $composition_raw)));
-            foreach ($parts as $part) {
-                if (preg_match('/^(\S+)\s*\((\d+(?:\.\d+)?)\)$/', $part, $m)) {
-                    $composition[] = [
-                        'item_id' => $m[1],
-                        'qty'     => floatval($m[2]),
-                    ];
-                }
-            }
+foreach ($parts as $part) {
+    if (preg_match('/^(\S+)\s*\((\d+(?:\.\d+)?)\)$/', $part, $m)) {
+        $composition[] = [
+            'item_id' => $m[1],
+            'qty'     => floatval($m[2]),
+            'mode'    => 'per_piece', // ← přidat výchozí hodnotu
+        ];
+    }
+}
         }
 
-        $product_map[$product_id] = $composition;
+$product_map[intval($product_id)] = $composition;
         $imported++;
     }
 

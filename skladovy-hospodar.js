@@ -840,7 +840,7 @@ document.getElementById('vyroba-calc').onclick = () => {
 
       // Vytvoř náhled potřebných surovin (modal)
       let html = `<div style="font-weight:700">Spočítané suroviny</div>
-        <div style="margin-top:8px"><table style="width:100%">
+        <div style="overflow-x:auto;margin-top:8px"><table style="width:100%">
         <thead><tr><th>Položka</th><th style="text-align:right">Potřeba</th>
         <th style="text-align:right">Skladem</th><th style="text-align:right">Zůstane</th></tr></thead><tbody>`;
 res.materials_info.forEach(m => {

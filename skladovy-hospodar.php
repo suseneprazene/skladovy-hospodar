@@ -198,8 +198,12 @@ add_action('wp_ajax_hospodar_get_products', function() {
                 
                 $cats = [];
                 $category_terms = wp_get_post_terms($child_id, 'product_cat');
-                if (!empty($category_terms)) {
-                    foreach ($category_terms as $c) $cats[] = ['id'=>$c->term_id,'name'=>$c->name];
+                if (empty($category_terms)) {
+                    $category_terms = wp_get_post_terms($id, 'product_cat'); // fallback na rodičovský produkt
+                }
+                foreach ($category_terms as $c) {
+                    $cats[] = ['id'=>$c->term_id,'name'=>$c->name];
+                    $categoryIds[$c->term_id] = $c->name; // ✅ plní catMap pro JS
                 }
 
                 // Přidej do seznamů sledování skladu
@@ -238,6 +242,7 @@ add_action('wp_ajax_hospodar_get_products', function() {
             $cats = [];
             foreach (wp_get_post_terms($id, 'product_cat') as $c) {
                 $cats[] = ['id' => $c->term_id, 'name' => $c->name];
+                $categoryIds[$c->term_id] = $c->name; // ✅ přidáno
             }
 
             $products[] = [
@@ -257,7 +262,7 @@ add_action('wp_ajax_hospodar_get_products', function() {
                 ? floatval($items_option[$product_key]['min']) : 0;
             if ($min_qty > 0 && $stock_qty <= $min_qty) {
                 $low_stock_products[] = [
-                    'category'=> $cats[0]['name'] ?? 'Bez kategorie',
+                    'category' => $cats[0]['name'] ?? 'Bez kategorie',
                     'name' => $p->get_name(),
                     'stock' => $stock_qty,
                     'min' => $min_qty
@@ -313,8 +318,9 @@ add_action('wp_ajax_hospodar_update_stock', function () {
 
             if ($p && $p->managing_stock()) {
                 // Stav skladu před a po prodeji
-                $before = (int) $p->get_stock_quantity();
-                $after = $before; // WooCommerce již upravil stav skladu
+                // WooCommerce sám odečítá zásoby – $after je aktuální stav po prodeji
+                $after = (int) $p->get_stock_quantity();
+                $before = $after + $qty; // stav před prodejem
 
                 // Vypočítat cenu za položku a přičíst k celkové ceně
                 $item_price = $price > 0 ? $price * $qty : $p->get_price() * $qty;

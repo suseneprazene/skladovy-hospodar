@@ -1,0 +1,144 @@
+```css
+/* Complete CSS for Skladový hospodář (replace or append to existing file)
+   Includes styling for .surovina-low so low-stock items are highlighted red.
+*/
+
+#skladovy-hospodar-app { font-family:Segoe UI,Arial,sans-serif; background:#f4f6fa; padding:30px 10px 60px 10px; max-width:1200px; margin:0 auto; }
+.sklad-mode-switch { margin-bottom:20px; }
+.sklad-mode-btn { font-size:18px; padding:7px 26px; margin-right:6px; border-radius:8px; border:1px solid #aaa; background:#fff; cursor:pointer; }
+.sklad-mode-btn.active { background:#007cba; color:#fff; border-color:#007cba; }
+.sklad-cat-list-item.active { font-weight:bold; color:#007cba; border:1px solid #007cba !important; }
+.sklad-search input { width:65%; max-width:300px; padding:6px 13px; font-size:17px; border-radius:6px; border:1px solid #ccc; margin-bottom:10px; }
+.sklad-item { box-shadow:0 2px 8px #f2f2f2; }
+.sklad-btn { font-size:16px; padding:6px 18px; border-radius:7px; border:1px solid #aaa; background:#f2fff2; cursor:pointer; }
+.sklad-btn:hover { background:#d4f6d5; }
+.sklad-cart { background:#fff; border-radius:10px; box-shadow:0 2px 8px #e2e2e2; padding:18px 19px; margin-top:34px; }
+.sklad-cart table { border-collapse:collapse; width:100%; }
+.sklad-cart th, .sklad-cart td { border:1px solid #eee; padding:6px 12px; font-size:15px; }
+.sklad-cart th { background:#f3f6fa; }
+.sklad-cust-results { max-height:120px; overflow-y:auto; border-bottom:1px solid #eee; }
+.sklad-cust-item:hover { background:#d7eaff; }
+.sklad-warning-lowstock { margin-bottom: 14px; }
+.sklad-qty { width: 70px !important; }
+.sklad-sale { width: 60px !important; }
+#sklad-hospodar-modal { z-index: 99999; }
+#sklad-hospodar-modal-bg { position:fixed;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,.35);z-index:99999;}
+#sklad-hospodar-modal-content { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;max-width:480px;width:96vw;padding:30px 26px 18px 26px;border-radius:14px;box-shadow:0 7px 28px #888;z-index:100000;}
+
+/* ---- Styles for výroba list (layout + alignment) ---- */
+.vyroba-scrollbox table { width:100%; table-layout:fixed; border-collapse:collapse; }
+.vyroba-scrollbox td, .vyroba-scrollbox th { vertical-align:middle; padding:8px 6px; }
+
+/* define three columns: checkbox | product name | controls */
+.vyroba-scrollbox table tr td:first-child { width:40px; padding-left:6px; }
+.vyroba-scrollbox table tr td:nth-child(2) { /* product name column */ padding-left:10px; }
+.vyroba-scrollbox table tr td:nth-child(3) { width:180px; text-align:right; padding-right:12px; }
+
+/* Inputs styling */
+.vyroba-qty, .vyroba-hmotnost {
+    display: inline-block;
+    vertical-align: middle;
+    box-sizing: border-box;
+    padding:10px 8px;
+    border:1px solid #e0e0e0;
+    border-radius:4px;
+    background:#fff;
+    font-size:16px;
+    color:#222;
+    text-align:center;
+    outline: none;
+}
+.vyroba-qty { width:64px; margin-right:8px; }
+.vyroba-hmotnost { width:86px; }
+
+.vyroba-qty:focus, .vyroba-hmotnost:focus {
+    border-color:#80bfff;
+    box-shadow:0 0 0 3px rgba(0,124,186,0.08);
+}
+
+/* header row above inputs (align with controls column) */
+#vyroba-fields-headers {
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+    margin-bottom:8px;
+    font-weight:600;
+    color:#333;
+    align-items:center;
+}
+#vyroba-fields-headers > div:first-child { width:64px; text-align:center; }
+#vyroba-fields-headers > div:last-child { width:86px; text-align:center; }
+
+/* selected row highlight (applied by JS) */
+.vyroba-row.selected {
+    background: #f3fdf3;
+    border-radius: 4px;
+}
+.vyroba-row { cursor: pointer; }
+.vyroba-row input { cursor: text; }
+.vyroba-row.selected td { transition: background .12s ease; }
+.vyroba-row td { padding:10px 8px; }
+.vyroba-scrollbox { background:#fff; border-radius:6px; }
+
+/* ---- Low stock styling for materials in result modal ---- */
+.surovina-low { color:#c00 !important; font-weight:700; }
+
+/* responsive tweak */
+@media (max-width:720px) {
+    .vyroba-scrollbox table tr td:nth-child(3) { text-align:left; width:140px; }
+    #vyroba-fields-headers { justify-content:flex-start; gap:10px; }
+}
+
+/* ---- Added: highlighting for top table ---- */
+/* Oranžové zvýraznění (≤15 ks) */
+.stock-low-orange td {
+  background: #fff7ec !important;
+  color: #8a4b00;
+  font-weight: 600;
+}
+
+/* Červené zvýraznění (≤5 ks) */
+.stock-low-red td {
+  background: #ffecec !important;
+  color: #a10000;
+  font-weight: 700;
+}
+
+/* Prodejní scrollbox - sjednocení se vzhledem Výroby */
+.prodej-scrollbox {
+  background:#fff;
+  border-radius:6px;
+  padding:8px;
+  border:1px solid #eee;
+  max-height:520px;
+  overflow:auto;
+}
+
+/* zachovat stejnou vizuální úpravu řádků jako u výroby */
+.prodej-row { cursor:pointer; }
+.prodej-row input { cursor:text; }
+
+/* Low stock results in modal */
+.surovina-shortage { color:#a10000; font-weight:700; }
+
+/* drobné úpravy pro responsivitu (pokud bude třeba) */
+@media (max-width:720px) {
+    .prodej-scrollbox table tr td:nth-child(3) { text-align:left; width:140px; }
+}
+
+/* ---- New: ensure mode row wraps on small screens and admin button remains visible ---- */
+.sklad-mode-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.sklad-mode-btn { flex-shrink: 0; }
+
+/* Make the stock toggle button visually consistent */
+#sh-stock-toggle { background:#fff; border:1px solid #ddd; padding:8px 12px; border-radius:6px; cursor:pointer; }
+#sh-stock-toggle:hover { background:#f3f6fb; }
+
+/* Ensure stock table container doesn't cause horizontal overflow */
+#sh-stock-table-wrap { overflow-x:auto; }
+
+/* Small screens: buttons will wrap and admin button will go to next row instead of being off-screen */
+@media (max-width:480px) {
+  .sklad-mode-btn { font-size:16px; padding:8px 12px; margin-bottom:6px; }
+}
+```
